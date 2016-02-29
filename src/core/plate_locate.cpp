@@ -3,7 +3,7 @@
 
 int plate_counter = 0;
 
-#define DEBUG_COLORSEGMENT
+//#define DEBUG_COLORSEGMENT
 //#define DEBUG_SOBELSEGMENT
 
 using namespace std;
