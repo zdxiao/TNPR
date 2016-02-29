@@ -110,11 +110,18 @@ int accuracyTest(const char* test_path) {
       int num = plateVec.size();
 
       if (num == 0) {
+        char buffer[50];
+        string filename = filepath.substr(filepath.find_last_of("/")+1,filepath.find_last_of("."));
         cout << kv->get("empty_plate") << endl;
+        // cout << plateLicense << endl;
+        sprintf(buffer, "resources/image/result/none/%s", filename.c_str());
+        // imshow("test",src);
+        // waitKey();
         if (plateLicense != kv->get("empty_plate")) {
           not_recognized_files.push_back(filepath);
           count_norecogin++;
         }
+        utils::imwrite(buffer, src);
       } else if (num > 1) {
 
         // 多车牌使用diff最小的那个记录
