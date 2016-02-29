@@ -183,13 +183,14 @@ int accuracyTest(const char* test_path) {
 /////////////////////maogeng////////////////////////////////////////////////////
           char buffer[50];
 
+          string filename = filepath.substr(filepath.find_last_of("/")+1,filepath.find_last_of("."));
           if(diff == 0)
           {
-            sprintf(buffer, "1111_%s_%s.jpg", filepath.c_str(), colorplate.c_str());
+            sprintf(buffer, "resources/image/result/correct/%s_%s.jpg", filename.c_str(), colorplate.c_str());
           }
           else
           {
-            sprintf(buffer, "0000_%s_%s.jpg", filepath.c_str(), colorplate.c_str());
+            sprintf(buffer, "resources/image/result/wrong/%s_%s.jpg", filename.c_str(), colorplate.c_str());
           }
 
           Mat src_clone = src.clone();
