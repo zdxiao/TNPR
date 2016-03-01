@@ -21,6 +21,7 @@ class CPlateDetect {
 
   int showResult(const Mat &result);
 
+
   //! 装载SVM模型
 
   void LoadSVM(std::string s);
