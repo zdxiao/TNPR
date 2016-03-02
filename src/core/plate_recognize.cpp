@@ -229,20 +229,22 @@ int CPlateRecognize::plateRecognize(Mat src,
       // int resultCR = charsRecognise(plate, plateIdentify,tmp);
       if (resultCR == 0) {
         std::string licensetmp = plateType + ":" + plateIdentify;
-        if(tmp>prob&&plateIdentify.size()==9) {prob=tmp;license=licensetmp;plateout=item;matChar=matChars;}
+        if(tmp>=prob&&plateIdentify.size()==9) {prob=tmp;license=licensetmp;plateout=item;matChar=matChars;}
       }
     }
-   if(prob>0.01) licenseVec.push_back(license);
+   if(prob>0.01){
+    licenseVec.push_back(license);
     //完整识别过程到此结束
 
     //如果是Debug模式，则还需要将定位的图片显示在原图左上角
 
     if (getPDDebug()) {
+      std::cout<<prob<<std::endl;
       Mat result;
       src.copyTo(result);
 
-      for (size_t j = 0; j < num; j++) {
-        CPlate item = plateVec[j];
+      // for (size_t j = 0; j < num; j++) {
+        CPlate item = plateout;
         Mat plate = item.getPlateMat();
 
         int height = 36;
@@ -266,11 +268,12 @@ int CPlateRecognize::plateRecognize(Mat src,
         for (int j = 0; j < 4; j++)
           line(result, rect_points[j], rect_points[(j + 1) % 4], lineColor, 2,
                8);
-      }
+      // }
 
       //显示定位框的图片
 
       showResult(result);
+    }
     }
   }
 

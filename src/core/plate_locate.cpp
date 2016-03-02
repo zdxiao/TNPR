@@ -1044,4 +1044,13 @@ int CPlateLocate::gray_stretch(Mat &src, Mat &src_gray, int t1, int t2){
   return 0;
 }
 
+int CPlateLocate::elimate_background(Mat &src, Mat &src_eliback){
+  Mat mat_threshold;
+  // double otsu_thresh_val =
+  //     threshold(grad, mat_threshold, 0, 255, CV_THRESH_OTSU + CV_THRESH_BINARY);
+  // Mat element = getStructuringElement(MORPH_RECT, Size(morphW, morphH));
+  // morphologyEx(mat_threshold, mat_threshold, MORPH_CLOSE, element);
+  return 0;
+}
+
 }

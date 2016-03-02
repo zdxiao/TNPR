@@ -1,9 +1,9 @@
 #include "easypr/core/plate_detect.h"
 #include "easypr/util/util.h"
 
-//#define DEBUG_LOCATE_PLATE
-//#define DEBUG_SAVE_LOCATE_PLATES
-//#define DEBUG_COLOR_RESULT
+#define DEBUG_LOCATE_PLATE
+// #define DEBUG_SAVE_LOCATE_PLATES
+// #define DEBUG_COLOR_RESULT
 int locatedPlatesCounter = 0;
 
 namespace easypr {
