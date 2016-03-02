@@ -391,8 +391,12 @@ int CPlateLocate::sobelOper(const Mat &in, Mat &out, int blurSize, int morphW,
   GaussianBlur(in, mat_blur, Size(blurSize, blurSize), 0, 0, BORDER_DEFAULT);
 
   Mat mat_gray;
-  if (mat_blur.channels() == 3)
-    cvtColor(mat_blur, mat_gray, CV_RGB2GRAY);
+  if (mat_blur.channels() == 3){
+    // cvtColor(mat_blur, mat_gray, CV_RGB2GRAY);
+// 
+    int t1=10,t2=250;
+    int flag = gray_stretch(mat_blur, mat_gray,t1, t2);
+  }
   else
     mat_gray = mat_blur;
 
@@ -1015,6 +1019,28 @@ int CPlateLocate::plateLocate(Mat src, vector<Mat> &resultVec, int index) {
     resultVec.push_back(plate.getPlateMat());
   }
 
+  return 0;
+}
+
+
+int CPlateLocate::gray_stretch(Mat &src, Mat &src_gray, int t1, int t2){
+  // Mat src_gray;
+  cvtColor(src, src_gray, CV_BGR2GRAY);
+  for (int i = 0; i < src_gray.rows; ++i)
+  {
+    uchar* data = src_gray.ptr<uchar>(i);
+    for (int j = 0; j < src_gray.cols; ++j)
+    {
+      if (data[j] <= t1)
+      {
+        data[j] = 0;
+      }else if (data[j] >= t2){
+        data[j] = 255;
+      }else{
+        data[j] = (data[j] - t1)*255/(t2-t1);
+      }
+    }
+  }
   return 0;
 }
 

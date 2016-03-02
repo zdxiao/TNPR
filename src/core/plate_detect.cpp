@@ -63,6 +63,8 @@ int CPlateDetect::plateDetect(Mat src, std::vector<CPlate> &resultVec,
     all_result_Plates.push_back(plate);
   }
 
+  Mat src_process = src;
+
   //颜色和边界闭操作同时采用
   #ifdef DEBUG_LOCATE_PLATE
   //std::cout << "Sobel Locate" << std::endl;
@@ -159,5 +161,6 @@ int CPlateDetect::showResult(const Mat &result) {
 
   return 0;
 }
+
 
 }
