@@ -107,12 +107,17 @@ int CPlateLocate::colorSearch(const Mat &src, const Color r, Mat &out,
   colorMatch(src, match_grey, r, false);
   //blueWhiteMatch(src, match_grey);
 
-  #ifdef DEBUG_COLORSEGMENT
-	namedWindow("match_grey", CV_WINDOW_NORMAL);
-	imshow("match_grey", match_grey);
-	//waitKey();
-    utils::imwrite("resources/image/tmp/match_grey.jpg", match_grey);
-  #endif
+
+  if (m_debug)
+  {
+    //maogeng//
+    // namedWindow("match_grey", CV_WINDOW_NORMAL);
+    // imshow("match_grey", match_grey);
+    // waitKey();
+    // utils::imwrite("resources/image/tmp/match_grey.jpg", match_grey);
+    //maogeng//
+  }
+
 
   Mat src_threshold = match_grey;
 //  threshold(match_grey, src_threshold, 0, 255,
@@ -122,12 +127,10 @@ int CPlateLocate::colorSearch(const Mat &src, const Color r, Mat &out,
       MORPH_RECT, Size(color_morph_width, color_morph_height));
   morphologyEx(src_threshold, src_threshold, MORPH_CLOSE, element);
 
-  #ifdef DEBUG_COLORSEGMENT
-	namedWindow("color morph", CV_WINDOW_NORMAL);
-	imshow("color morph", src_threshold);
+	// namedWindow("color morph", CV_WINDOW_NORMAL);
+	// imshow("color morph", src_threshold);
 	//waitKey();
-    utils::imwrite("resources/image/tmp/match_grey.jpg", match_grey);
-  #endif
+    // utils::imwrite("resources/image/tmp/match_grey.jpg", match_grey);
 
   src_threshold.copyTo(out);
 
@@ -154,23 +157,22 @@ int CPlateLocate::colorSearch(const Mat &src, const Color r, Mat &out,
       itc = contours.erase(itc);
     else {
 
-#ifdef DEBUG_COLORSEGMENT
-	  	if(m_debug)
-		{
-		    Mat drawSrc = src.clone();
-            Point2f vertices[4];
-            mr.points(vertices);
-            for(int i = 0; i < 4; ++i)
-            {
-                line(drawSrc, vertices[i], vertices[(i + 1) % 4], Scalar(0, 0, 255), 1);
-            }
-            namedWindow("locate", CV_WINDOW_NORMAL);
-            imshow("locate", drawSrc);
-            cout << "Size is OK!" << endl;
-            waitKey();
-		}
-#endif
-
+//maogeng///////////////////
+	 //  	if(m_debug)
+		// {
+		//     Mat drawSrc = src.clone();
+  //           Point2f vertices[4];
+  //           mr.points(vertices);
+  //           for(int i = 0; i < 4; ++i)
+  //           {
+  //               line(drawSrc, vertices[i], vertices[(i + 1) % 4], Scalar(0, 0, 255), 2);
+  //           }
+  //           namedWindow("locate", CV_WINDOW_NORMAL);
+  //           imshow("locate", drawSrc);
+  //           cout << "Size is OK!" << endl;
+  //           waitKey();
+		// }
+//maogeng///////////////////
       ++itc;
       outRects.push_back(mr);
     }
@@ -190,13 +192,15 @@ int CPlateLocate::sobelFrtSearch(const Mat &src,
 
   sobelOper(src, src_threshold, m_GaussianBlurSize, m_MorphSizeWidth,
             m_MorphSizeHeight);
-#ifdef DEBUG_SOBELSEGMENT
   if(m_debug)
   {
-      imshow("sobel first threshold", src_threshold);
-      waitKey();
+    //maogeng//
+      // namedWindow("sobel first threshold", CV_WINDOW_NORMAL);
+      // imshow("sobel first threshold", src_threshold);
+      // waitKey();
+    //maogeng//
+
   }
-#endif
   vector<vector<Point>> contours;
   findContours(src_threshold,
                contours,               // a vector of contours
@@ -563,7 +567,7 @@ int CPlateLocate::deskew(const Mat &src, const Mat &src_b,
 
       // haitungaga添加，删除非区域，这个函数影响了25%的完整定位率
 
-      DeleteNotArea(deskew_mat);
+      // DeleteNotArea(deskew_mat);
 
       // 这里对deskew_mat进行了一个筛选
       // 使用了经验数值：2.3和6
@@ -826,17 +830,15 @@ int CPlateLocate::plateColorLocate(Mat src, vector<CPlate> &candPlates,
 
   for (size_t i = 0; i < plates.size(); i++) {
     candPlates.push_back(plates[i]);
-#ifdef DEBUG_COLORSEGMENT
-    if(m_debug)
-    {
-        char buffer[50];
-        imshow("ColorSegedPlate", plates[i].getPlateMat());
-        sprintf(buffer, "resources/image/plates0218/%04d.jpg", plate_counter);
-        ++plate_counter;
-        utils::imwrite(buffer, plates[i].getPlateMat());
-        waitKey();
-    }
-#endif
+    // if(m_debug)
+    // {
+    //     char buffer[50];
+    //     imshow("ColorSegedPlate", plates[i].getPlateMat());
+    //     sprintf(buffer, "resources/image/plates0218/%04d.jpg", plate_counter);
+    //     ++plate_counter;
+    //     utils::imwrite(buffer, plates[i].getPlateMat());
+    //     waitKey();
+    // }
   }
   return 0;
 }
@@ -913,7 +915,7 @@ int CPlateLocate::plateSobelLocate(Mat src, vector<CPlate> &candPlates,
 
   for (size_t i = 0; i < bound_rects.size(); i++) {
     float fRatio = bound_rects[i].width * 1.0f / bound_rects[i].height;
-    if (fRatio < 4 && fRatio > 1.0 && bound_rects[i].height < 120) {
+    if (fRatio < 4.0 && fRatio > 1.0 && bound_rects[i].height < 120) {
       Rect_<float> itemRect = bound_rects[i];
 
       //宽度过小，进行扩展
