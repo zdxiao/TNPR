@@ -24,12 +24,13 @@
     {
       "op": "Convolution", 
       "param": {
-        "kernel": "(4, 4)", 
+        "dilate": "(1,1)", 
+        "kernel": "(4,4)", 
         "no_bias": "False", 
         "num_filter": "50", 
         "num_group": "1", 
-        "pad": "(0, 0)", 
-        "stride": "(1, 1)", 
+        "pad": "(0,0)", 
+        "stride": "(1,1)", 
         "workspace": "512"
       }, 
       "name": "convolution0", 
@@ -46,10 +47,10 @@
     {
       "op": "Pooling", 
       "param": {
-        "kernel": "(2, 2)", 
-        "pad": "(0, 0)", 
+        "kernel": "(2,2)", 
+        "pad": "(0,0)", 
         "pool_type": "max", 
-        "stride": "(2, 2)"
+        "stride": "(2,2)"
       }, 
       "name": "pooling0", 
       "inputs": [[4, 0]], 
@@ -72,12 +73,13 @@
     {
       "op": "Convolution", 
       "param": {
-        "kernel": "(4, 4)", 
+        "dilate": "(1,1)", 
+        "kernel": "(4,4)", 
         "no_bias": "False", 
         "num_filter": "50", 
         "num_group": "1", 
-        "pad": "(0, 0)", 
-        "stride": "(1, 1)", 
+        "pad": "(0,0)", 
+        "stride": "(1,1)", 
         "workspace": "512"
       }, 
       "name": "convolution1", 
@@ -94,10 +96,10 @@
     {
       "op": "Pooling", 
       "param": {
-        "kernel": "(2, 2)", 
-        "pad": "(0, 0)", 
+        "kernel": "(2,2)", 
+        "pad": "(0,0)", 
         "pool_type": "max", 
-        "stride": "(2, 2)"
+        "stride": "(2,2)"
       }, 
       "name": "pooling1", 
       "inputs": [[9, 0]], 
@@ -176,7 +178,9 @@
       "op": "SoftmaxOutput", 
       "param": {
         "grad_scale": "1", 
-        "multi_output": "False"
+        "ignore_label": "-1", 
+        "multi_output": "False", 
+        "use_ignore": "False"
       }, 
       "name": "softmax", 
       "inputs": [[18, 0], [19, 0]], 
