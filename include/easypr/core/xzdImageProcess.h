@@ -64,4 +64,5 @@ void warpHomo(Mat src, Mat &dst, Mat& H);
  */
 void whiteBlackSegment(Mat src, Mat &dst, int flag = 1, double thres= 0.3);
 
+bool cutPlateEdge(Mat img, Mat &new_plate);
 #endif
