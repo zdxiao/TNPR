@@ -1,5 +1,6 @@
 #include "easypr/core/plate_judge.h"
 #include "easypr/config.h"
+#include "easypr/core/xzdImageProcess.h"
 
 namespace easypr {
 
@@ -49,6 +50,17 @@ int PlateJudge::plateJudge(const std::vector<CPlate> &inVec,
   int num = inVec.size();
   for (int j = 0; j < num; j++) {
     CPlate inPlate = inVec[j];
+    Mat tmp = inPlate.getPlateMat();
+    //imshow("before", tmp);
+    if(!cutPlateEdge(tmp, tmp))
+    {
+        //std::cout << "cut pass" << std::endl;
+        continue;
+    };
+    //imshow("after", tmp);
+    //waitKey();
+    inPlate.setPlateMat(tmp);
+
     Mat inMat = inPlate.getPlateMat();
 
     int response = -1;

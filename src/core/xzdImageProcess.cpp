@@ -459,4 +459,164 @@ void whiteBlackSegment(Mat src, Mat &dst, int flag, double thres)
 	}
 }
 
+bool cutPlateEdge(Mat img, Mat &new_plate)
+{
+    Mat hsv;
 
+    cvtColor(img, hsv, CV_BGR2HSV);
+
+    Rect roi_rect(img.cols/5, img.rows/5, 3*img.cols/5, 3*img.rows/5);
+
+    Mat roi_hsv = hsv(roi_rect);
+
+    // Quantize the hue to 30 levels
+    // and the saturation to 32 levels
+    int hbins = 45, sbins = 64;
+    int histSize[] = {hbins, sbins};
+    // hue varies from 0 to 179, see cvtColor
+    float hranges[] = { 0, 180};
+    // saturation varies from 0 (black-gray-white) to
+    // 255 (pure spectrum color)
+    float sranges[] = { 0, 256};
+    const float* ranges[] = { hranges, sranges };
+    MatND hist;
+    // we compute the histogram from the 0-th and 1-st channels
+    int channels[] = {0, 1};
+
+    calcHist( &roi_hsv, 1, channels, Mat(), // do not use mask
+             hist, 2, histSize, ranges,
+             true, // the histogram is uniform
+             false );
+    double maxVal=0;
+    minMaxLoc(hist, 0, &maxVal, 0, 0);
+
+    int scale = 4;
+    Mat histImg = Mat::zeros(sbins*scale, hbins*scale, CV_8UC3);
+
+    int maxHS[2] = {0};
+    int maxHSval = 0;
+
+    for( int h = 0; h < hbins; h++ )
+        for( int s = 0; s < sbins; s++ )
+        {
+            float binVal = hist.at<float>(h, s);
+
+            if(binVal > maxHSval)
+            {
+                maxHSval = binVal;
+                maxHS[0] = h;
+                maxHS[1] = s;
+            }
+
+            int intensity = cvRound(binVal*255/maxVal);
+        }
+
+    Rect outRect;
+
+    Vec3b hsvPixel;
+    hsvPixel[0] = 4 * maxHS[0];
+    hsvPixel[1] = 4 * maxHS[1];
+
+    int disH = 30;
+    int disS = 60;
+    int disV = 100;
+
+    Mat bin_img = Mat::zeros(img.rows, img.cols, CV_8UC1);
+
+    for(int i = 0; i != hsv.rows; ++i)
+    {
+        uchar *p = hsv.ptr<uchar>(i);
+        uchar *p_bin = bin_img.ptr<uchar>(i);
+        for(int j = 0; j != hsv.cols; ++j)
+        {
+            if(p[3 * j] > hsvPixel[0] - disH && p[3 * j] < hsvPixel[0] + disH &&
+            p[3 * j + 1] > hsvPixel[1] - disS && p[3 * j + 1] < hsvPixel[1] + disS
+            //&& p[3 * j + 2] > hsvPixel[2] - disV && p[3 * j + 2] < hsvPixel[2] + disV
+            )
+            {
+                p_bin[j] = 255;
+            }
+        }
+    }
+
+    Mat pre_se = getStructuringElement(MORPH_RECT, Size(3, 3));
+    Mat se = getStructuringElement(MORPH_RECT, Size(3, 3));
+
+    dilate(bin_img, bin_img, se, Point(), 1);
+
+    int top = 0, botton = bin_img.rows - 1;
+
+    for(int i = 0; i != bin_img.rows; ++i)
+    {
+        uchar *p = bin_img.ptr<uchar>(i);
+        int white_counter = 0;
+        for(int j = 0; j != bin_img.cols; ++j)
+        {
+            white_counter = p[j] == 255 ? white_counter + 1 : white_counter;
+        }
+        if(white_counter > 0.2 * bin_img.cols)
+        {
+            top = i;
+            break;
+        }
+    }
+    for(int i = bin_img.rows - 1; i > -1; --i)
+    {
+        uchar *p = bin_img.ptr<uchar>(i);
+        int white_counter = 0;
+        for(int j = 0; j != bin_img.cols; ++j)
+        {
+            white_counter = p[j] == 255 ? white_counter + 1 : white_counter;
+        }
+        if(white_counter > 0.2 * bin_img.cols)
+        {
+            botton = i;
+            break;
+        }
+    }
+
+    Mat tmp_img;
+    transpose(bin_img, tmp_img);
+    int _left = 0, _right = tmp_img.rows - 1;
+
+    for(int i = 0; i != tmp_img.rows; ++i)
+    {
+        uchar *p = tmp_img.ptr<uchar>(i);
+        int white_counter = 0;
+        for(int j = 0; j != tmp_img.cols; ++j)
+        {
+            white_counter = p[j] == 255 ? white_counter + 1 : white_counter;
+        }
+        if(white_counter > 0.2 * tmp_img.cols)
+        {
+            _left = i;
+            break;
+        }
+    }
+
+    for(int i = tmp_img.rows - 1; i > -1; --i)
+    {
+        uchar *p = tmp_img.ptr<uchar>(i);
+        int white_counter = 0;
+        for(int j = 0; j != tmp_img.cols; ++j)
+        {
+            white_counter = p[j] == 255 ? white_counter + 1 : white_counter;
+        }
+        if(white_counter > 0.2 * tmp_img.cols)
+        {
+            _right = i;
+            break;
+        }
+    }
+
+    if(top > botton || _left > _right)
+    {
+        new_plate = img.clone();
+        return false;
+    }
+
+    Rect new_roi(_left, top, _right - _left + 1, botton - top + 1);
+    new_plate = img(new_roi);
+    resize(new_plate, new_plate, Size(136, 36));
+    return true;
+}

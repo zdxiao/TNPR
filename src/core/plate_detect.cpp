@@ -1,5 +1,6 @@
 #include "easypr/core/plate_detect.h"
 #include "easypr/util/util.h"
+#include "easypr/core/xzdImageProcess.h"
 
 //#define DEBUG_LOCATE_PLATE
 //#define DEBUG_SAVE_LOCATE_PLATES
@@ -35,6 +36,7 @@ int CPlateDetect::plateDetect(Mat src, std::vector<CPlate> &resultVec,
   m_plateLocate->plateColorLocate(src, color_Plates, index);
 
   PlateJudge::instance()->plateJudge(color_Plates, color_result_Plates);
+
 
   #ifdef DEBUG_LOCATE_PLATE
   for(auto iter = color_result_Plates.begin(); iter != color_result_Plates.end(); ++iter)
@@ -104,6 +106,14 @@ int CPlateDetect::plateDetect(Mat src, std::vector<CPlate> &resultVec,
     // 把截取的车牌图像依次放到左上角
 
     CPlate plate = all_result_Plates[i];
+/*
+    Mat tmp = plate.getPlateMat();
+    //imshow("before", tmp);
+    cutPlateEdge(tmp, tmp);
+    //imshow("after", tmp);
+    //waitKey();
+    plate.setPlateMat(tmp);
+*/
     resultVec.push_back(plate);
   }
   return 0;
