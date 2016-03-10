@@ -16,6 +16,12 @@ class CPlateDetect {
 
   int plateDetect(Mat src, std::vector<CPlate> &resultVec,
                   bool showDetectArea = true, int index = 0);
+  bool calcSafeRect(const RotatedRect &roi_rect, const Mat &src,
+                                Rect_<float> &safeBoundRect);
+
+  int plateUnion(Rect rect1, Rect rect2, float ratio);
+
+  float rrOverlap(const Rect& box1,const Rect& box2);
 
   //! 展示中间的结果
 
