@@ -85,6 +85,8 @@ class CPlateLocate {
   //! 
   int gray_stretch(Mat &src, Mat &src_gray_stretch, int t1, int t2);
 
+  //
+  int elimate_background(Mat &src, Mat &src_eliback);
   
   //! 未使用函数与代码
   //! 开始------------
