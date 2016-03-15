@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-#!/usr/bin/env bash
-
 build_tmp="_build/"
 
 mkdir ${build_tmp} 2>/dev/null
