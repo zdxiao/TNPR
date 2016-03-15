@@ -22,6 +22,7 @@ class CPlateDetect {
   int plateUnion(Rect rect1, Rect rect2, float ratio);
 
   float rrOverlap(const Rect& box1,const Rect& box2);
+  void expandPlate(Mat src, std::vector<CPlate> &all_result_Plates);
 
   //! 展示中间的结果
 

@@ -29,6 +29,7 @@ int CPlateDetect::plateDetect(Mat src, std::vector<CPlate> &resultVec,
   const int color_find_max = m_maxPlates;
 
   m_plateLocate->plateColorLocate(src, color_Plates, index);
+  expandPlate(src,color_Plates);
   color_result_Plates = color_Plates;
 
 
@@ -63,15 +64,16 @@ int CPlateDetect::plateDetect(Mat src, std::vector<CPlate> &resultVec,
     all_result_Plates.push_back(plate);
   }
 
-  Mat src_process = src;
+  // Mat src_process = src;
 
   //颜色和边界闭操作同时采用
 
   {
     m_plateLocate->plateSobelLocate(src, sobel_Plates, index);
+    expandPlate(src,sobel_Plates);
     sobel_result_Plates = sobel_Plates;
 
-    // PlateJudge::instance()->plateJudge(sobel_Plates, sobel_result_Plates);
+    PlateJudge::instance()->plateJudge(sobel_Plates, sobel_result_Plates);
 
     for (size_t i = 0; i < sobel_result_Plates.size(); i++) {
       CPlate plate = sobel_result_Plates[i];
@@ -130,25 +132,68 @@ int CPlateDetect::plateDetect(Mat src, std::vector<CPlate> &resultVec,
 
     // 把截取的车牌图像依次放到左上角
     CPlate plate = all_result_Plates[i];
+    // Mat src_clone = src.clone();
+    // // Rect rect = plate.getPlatePos().boundingRect();
+    // Rect_<float> safeBoundRect;
+    // bool isFormRect = calcSafeRect(plate.getPlatePos(), src, safeBoundRect);
+    // // std::cout<<"safeBoundRect:"<<safeBoundRect.x<<":"<<safeBoundRect.y<<std::endl;
+    // Rect rect = safeBoundRect;
+    // // src_clone(safeBound.size()<<std::endl;
+    // int width = rect.width;
+    // int height = rect.height;
 
-/*
-    Mat tmp = plate.getPlateMat();
-    //imshow("before", tmp);
-    cutPlateEdge(tmp, tmp);
-    //imshow("after", tmp);
-    //waitKey();
-    plate.setPlateMat(tmp);
-*/
+    // int ratio = 10;
+    // if(rect.x - width/ratio>0){ rect.x = rect.x - width/ratio; rect.width = rect.width + width/ratio;} else rect.x = 0;
+    // if(rect.y - height/ratio>0){ rect.y = rect.y - height/ratio; rect.height = rect.height + height/ratio;} else rect.y = 0;
+    // if(rect.x + rect.width + width/ratio < src.cols) rect.width = rect.width + width/ratio;  else rect.width = src.cols-rect.x;
+    // if(rect.y + rect.height + height/ratio < src.rows) rect.height = rect.height + height/ratio; else rect.height = src.rows-rect.y;
+    // // std::cout<<"rect.x:"<<rect.x<<",rect.y:"<<rect.y<<",rect.width:"<<rect.width<<",rect.height:"<<rect.height<<std::endl;
 
+    // Mat mat = src(rect);
+
+    // plate.setPlateMat(mat);
 
     #ifdef DEBUG
+    // std::cout<<plate_mat.rows<<std::endl;
     imshow("Plate", plate.getPlateMat());
     waitKey();
     #endif
 
     resultVec.push_back(plate);
+    // std::cout<<resultVec.size()<<std::endl;
   }
   return 0;
+}
+
+void CPlateDetect::expandPlate(Mat src, std::vector<CPlate> &all_result_Plates){
+  std::vector<CPlate> resultVec;
+  for (size_t i = 0; i < all_result_Plates.size(); i++) {
+
+    // 把截取的车牌图像依次放到左上角
+    CPlate plate = all_result_Plates[i];
+    Mat src_clone = src.clone();
+    // Rect rect = plate.getPlatePos().boundingRect();
+    Rect_<float> safeBoundRect;
+    bool isFormRect = calcSafeRect(plate.getPlatePos(), src, safeBoundRect);
+    // std::cout<<"safeBoundRect:"<<safeBoundRect.x<<":"<<safeBoundRect.y<<std::endl;
+    Rect rect = safeBoundRect;
+    // src_clone(safeBound.size()<<std::endl;
+    int width = rect.width;
+    int height = rect.height;
+
+    int ratio = 10;
+    if(rect.x - width/ratio>0){ rect.x = rect.x - width/ratio; rect.width = rect.width + width/ratio;} else rect.x = 0;
+    if(rect.y - height/ratio>0){ rect.y = rect.y - height/ratio; rect.height = rect.height + height/ratio;} else rect.y = 0;
+    if(rect.x + rect.width + width/ratio < src.cols) rect.width = rect.width + width/ratio;  else rect.width = src.cols-rect.x;
+    if(rect.y + rect.height + height/ratio < src.rows) rect.height = rect.height + height/ratio; else rect.height = src.rows-rect.y;
+    // std::cout<<"rect.x:"<<rect.x<<",rect.y:"<<rect.y<<",rect.width:"<<rect.width<<",rect.height:"<<rect.height<<std::endl;
+
+    Mat mat = src(rect);
+
+    plate.setPlateMat(mat);
+    resultVec.push_back(plate);
+  }
+  all_result_Plates = resultVec;
 }
 
 int CPlateDetect::showResult(const Mat &result) {

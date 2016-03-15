@@ -204,7 +204,7 @@ int CPlateRecognize::plateRecognize(Mat src,
   // 进行深度定位，使用颜色信息与二次Sobel
 
   int resultPD = plateDetect(src, plateVec, kDebug, 0);
-  std::cout<<plateVec.size()<<std::endl;
+  // std::cout<<plateVec.size()<<std::endl;
 
   if (resultPD == 0) {
     size_t num = plateVec.size();
@@ -216,6 +216,7 @@ int CPlateRecognize::plateRecognize(Mat src,
     for (size_t j = 0; j < num; j++) {
       CPlate item = plateVec[j];
       Mat plate = item.getPlateMat();
+      // std::cout<<plate.rows<<","<<plate.cols<<std::endl;
 
       //获取车牌颜色
 
@@ -234,6 +235,7 @@ int CPlateRecognize::plateRecognize(Mat src,
       }
     }
    if(prob>0.01){
+    // std::cout<<"prob>0.01"<<std::endl;
     licenseVec.push_back(license);
     //完整识别过程到此结束
 
@@ -273,9 +275,11 @@ int CPlateRecognize::plateRecognize(Mat src,
 
       //显示定位框的图片
 
+        // std::cout<<"showResult"<<std::endl;
         showResult(result);
       }
     }else{
+      // std::cout<<"prob<0..01"<<std::endl;
        ///////////////////////////////////////////////
  /////////////maogeng///////////////////////////
       std::vector<CPlate> all_Plates;
